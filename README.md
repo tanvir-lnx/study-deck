@@ -29,7 +29,7 @@ The first indexing or question request can take a while: it may need to download
 Clone this repository (replace the example owner with the GitHub account or organization that hosts it), then install the dependencies:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/studydeck.git
+git clone https://github.com/tanvir-lnx/study-deck.git
 cd studydeck
 npm install
 ```
