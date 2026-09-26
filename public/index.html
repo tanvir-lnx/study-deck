@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StudyDeck</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #17202b;
+            --muted: #697586;
+            --line: #e4e9ef;
+            --paper: #f5f7fa;
+            --card: #fff;
+            --accent: #246b58;
+            --accent-soft: #e7f3ef;
+            --focus: #276ef1
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font: 15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: wait
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px
+        }
+
+        .app-shell {
+            max-width: 1160px;
+            height: 100dvh;
+            margin: 0 auto;
+            padding: 24px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        .topbar,
+        .brand,
+        .privacy-chip,
+        .hero,
+        .section-head,
+        .button-row,
+        .workspace-head {
+            display: flex;
+            align-items: center
+        }
+
+        .topbar,
+        .hero,
+        .section-head,
+        .workspace-head {
+            justify-content: space-between
+        }
+
+        .brand {
+            gap: 10px;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 750;
+            letter-spacing: -.03em;
+            font-size: 1.12rem
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 10px;
+            color: #fff;
+            font-size: .82rem;
+            letter-spacing: 0
+        }
+
+        .privacy-chip,
+        .mode-badge,
+        .demo-badge {
+            gap: 8px;
+            padding: 6px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--card);
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 650
+        }
+
+        .privacy-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #2f9b70
+        }
+
+        .hero {
+            gap: 28px;
+            padding: 42px 0 30px;
+            flex: 0 0 auto
+        }
+
+        .hero-copy {
+            max-width: 640px
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--accent);
+            font-size: .7rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.1rem);
+            line-height: 1.08;
+            letter-spacing: -.055em
+        }
+
+        .hero-copy>p:last-child {
+            margin: 12px 0 0;
+            color: var(--muted);
+            max-width: 580px
+        }
+
+        .button {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            transition: transform .15s, background .15s
+        }
+
+        .button:hover {
+            transform: translateY(-1px)
+        }
+
+        .button-primary {
+            background: var(--accent);
+            color: #fff
+        }
+
+        .button-primary:hover {
+            background: #1c5848
+        }
+
+        .button-secondary {
+            background: var(--ink);
+            color: #fff
+        }
+
+        .button-quiet {
+            background: #fff;
+            border-color: var(--line);
+            color: var(--ink)
+        }
+
+        .demo-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap
+        }
+
+        .demo-button span {
+            border-left: 1px solid #ffffff66;
+            padding-left: 12px;
+            font-size: .78rem;
+            font-weight: 550;
+            opacity: .85
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+            gap: 20px;
+            align-items: stretch;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden
+        }
+
+        .layout>aside {
+            min-height: 0;
+            display: flex;
+            flex-direction: column
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px #18283b08
+        }
+
+        .material-card,
+        .workspace {
+            padding: 22px
+        }
+
+        .section-head {
+            gap: 12px
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.12rem;
+            letter-spacing: -.025em
+        }
+
+        .quiet {
+            color: var(--muted);
+            font-size: .78rem
+        }
+
+        .card-copy {
+            margin: 12px 0;
+            color: var(--muted);
+            font-size: .9rem
+        }
+
+        textarea,
+        input[type=text] {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fbfcfd;
+            color: var(--ink);
+            padding: 12px
+        }
+
+        textarea {
+            min-height: 210px;
+            resize: vertical
+        }
+
+        textarea:focus,
+        input:focus {
+            border-color: var(--accent);
+            outline: 3px solid #246b581c
+        }
+
+        .button-row {
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px
+        }
+
+        .button-row.compact {
+            margin-top: 0
+        }
+
+        #status,
+        .progress {
+            min-height: 1.5em;
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: .82rem
+        }
+
+        .privacy-note {
+            margin: 14px 4px 0;
+            color: var(--muted);
+            font-size: .8rem
+        }
+
+        .workspace {
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable
+        }
+
+        .workspace-head {
+            margin-bottom: 18px
+        }
+
+        .mode-badge {
+            background: #f5f8f7
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--line);
+            margin: 0 0 20px
+        }
+
+        .tabs button {
+            position: relative;
+            border: 0;
+            background: transparent;
+            padding: 10px 14px;
+            color: var(--muted);
+            font-weight: 700
+        }
+
+        .tabs button[aria-selected=true] {
+            color: var(--accent)
+        }
+
+        .tabs button[aria-selected=true]:after {
+            position: absolute;
+            right: 10px;
+            bottom: -1px;
+            left: 10px;
+            height: 2px;
+            background: var(--accent);
+            content: ""
+        }
+
+        .panel-title {
+            margin: 0 0 6px;
+            font-size: 1rem
+        }
+
+        .panel-help {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: .88rem
+        }
+
+        .ask-row {
+            display: flex;
+            gap: 8px
+        }
+
+        .ask-row input {
+            min-width: 0
+        }
+
+        .out {
+            min-height: 2.5em;
+            margin-top: 18px;
+            white-space: pre-wrap
+        }
+
+        .src {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: .84rem
+        }
+
+        .src mark {
+            display: block;
+            margin: 8px 0;
+            padding: 9px 11px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #f8fafb;
+            color: var(--ink);
+            white-space: pre-wrap
+        }
+
+        .question-card {
+            padding: 16px 0;
+            border-top: 1px solid var(--line)
+        }
+
+        .question-card:first-child {
+            border-top: 0
+        }
+
+        .question-card h3 {
+            margin: 0 0 5px;
+            color: var(--muted);
+            font-size: .74rem;
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .question-card>p {
+            margin: 0;
+            font-weight: 700
+        }
+
+        fieldset {
+            display: grid;
+            gap: 8px;
+            border: 0;
+            margin: 12px 0 0;
+            padding: 0
+        }
+
+        fieldset label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            cursor: pointer
+        }
+
+        fieldset label:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft)
+        }
+
+        fieldset input {
+            flex: 0 0 auto;
+            margin: 4px 0 0;
+            accent-color: var(--accent)
+        }
+
+        #quizResults {
+            margin-top: 18px;
+            padding: 20px;
+            background: #f8fafb;
+            border: 1px solid var(--line);
+            border-radius: 12px
+        }
+
+        #quizResults h3 {
+            margin: 0 0 12px
+        }
+
+        #quizResults ol {
+            padding-left: 22px
+        }
+
+        #quizResults li {
+            padding: 8px 0
+        }
+
+        #quizResults li p {
+            margin: 6px 0
+        }
+
+        .demo-badge {
+            margin: 0 0 16px;
+            background: var(--accent-soft);
+            border-color: #cfe7dc;
+            color: var(--accent)
+        }
+
+        @media(max-width:760px) {
+
+            html,
+            body {
+                height: auto;
+                min-height: 100%;
+                overflow: auto
+            }
+
+            .app-shell {
+                height: auto;
+                min-height: 100dvh;
+                padding: 14px 14px 24px;
+                overflow: visible
+            }
+
+            .hero {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+                padding: 16px 0 12px
+            }
+
+            .hero-copy>p:last-child,
+            .card-copy {
+                display: none
+            }
+
+            h1 {
+                font-size: clamp(1.7rem, 7.5vw, 2.2rem)
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                gap: 10px;
+                flex: initial;
+                overflow: visible
+            }
+
+            .material-card,
+            .workspace {
+                padding: 14px
+            }
+
+            .layout>aside {
+                min-height: initial
+            }
+
+            .layout>aside .privacy-note {
+                display: none
+            }
+
+            .material-card textarea {
+                min-height: 100px;
+                height: auto;
+                resize: vertical
+            }
+
+            .material-card .button-row {
+                margin-top: 6px
+            }
+
+            #status {
+                margin-top: 6px;
+                font-size: .76rem
+            }
+
+            .workspace {
+                min-height: initial;
+                overflow: visible;
+                scrollbar-gutter: auto
+            }
+
+            .workspace-head {
+                margin-bottom: 10px
+            }
+
+            .tabs {
+                margin-bottom: 10px
+            }
+
+            .tabs button {
+                padding: 8px 12px
+            }
+
+            .panel-help {
+                margin-bottom: 8px
+            }
+
+            .hero .demo-button {
+                width: 100%;
+                justify-content: center
+            }
+
+            .privacy-chip {
+                font-size: .72rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="StudyDeck home"><span
+                    class="brand-mark">SD</span><span>StudyDeck</span></a>
+            <div class="privacy-chip"><span class="privacy-dot"></span>AI runs on your device</div>
+        </header>
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">A quieter way to study</p>
+                <h1>Make your notes make sense.</h1>
+                <p>Ask questions or take a quick quiz. Your notes stay on this device, and QVAC runs the AI locally.</p>
+            </div>
+            <button id="demo" class="button button-primary demo-button">Try the 5-question demo
+                <span>Instant</span></button>
+        </section>
+        <main class="layout">
+            <aside>
+                <section class="card material-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Your library</p>
+                            <h2>Your material</h2>
+                        </div>
+                        <span class="quiet">Local only</span>
+                    </div>
+                    <p class="card-copy">Paste notes or upload text, Markdown, or a text-based PDF.</p>
+                    <textarea id="notes" aria-label="Your notes"
+                        placeholder="Paste lecture notes, a chapter, or an article…"></textarea>
+                    <div class="button-row">
+                        <button id="index" class="button button-secondary">Index notes</button>
+                        <button class="button button-quiet" id="load">Upload file</button>
+                        <input type="file" id="file" accept=".txt,.md,.pdf,application/pdf,text/plain,text/markdown"
+                            hidden>
+                    </div>
+                    <p id="status" role="status">Add your notes to get started, or try the instant demo.</p>
+                </section>
+                <p class="privacy-note">Your notes and AI requests stay on this computer. First use may download local
+                    models.</p>
+            </aside>
+            <section class="card workspace">
+                <div class="workspace-head">
+                    <div>
+                        <p class="eyebrow">Study session</p>
+                        <h2>What would you like to do?</h2>
+                    </div>
+                    <span class="mode-badge" id="modeBadge">Ready</span>
+                </div>
+                <div class="tabs" role="tablist" aria-label="Study tools">
+                    <button role="tab" aria-selected="true" id="t-ask">Ask</button>
+                    <button role="tab" aria-selected="false" id="t-quiz">Quiz</button>
+                </div>
+                <div id="ask">
+                    <h3 class="panel-title">Ask your notes</h3>
+                    <p class="panel-help">Get a grounded answer with the source passages that support it.</p>
+                    <form class="ask-row" id="askForm">
+                        <input id="q" name="question" type="text" autocomplete="off" enterkeyhint="send"
+                            placeholder="Ask something about your material…" aria-label="Question">
+                        <button id="askBtn" class="button button-primary" type="submit">Ask</button>
+                    </form>
+                    <div class="out" id="askOut" aria-live="polite"></div>
+                    <div class="src" id="askSrc"></div>
+                </div>
+                <div id="quiz" hidden>
+                    <div id="demoNotice" class="demo-badge" hidden>Presentation demo · Sample answers are preselected.
+                        Change any answer, then submit.</div>
+                    <h3 class="panel-title">Five questions, one review</h3>
+                    <p class="panel-help">Answer at your own pace. Your score, explanations, and sources appear
+                        together.</p>
+                    <div class="button-row compact"><button id="newQ" class="button button-secondary">Build a quiz from
+                            my notes</button></div>
+                    <p id="quizProgress" class="progress" role="status"></p>
+                    <div id="quizQuestions"></div>
+                    <div class="button-row"><button id="grade" class="button button-primary" hidden>Submit
+                            answers</button></div>
+                    <section id="quizResults" hidden aria-live="polite"></section>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        const $ = (id) => document.getElementById(id);
+        const status = (t) => ($('status').textContent = t);
+        const QUIZ_LENGTH = 5;
+        let quizRound = { questions: [], complete: false, demo: false };
+        let indexedNotes = null;
+        let pdfIndexed = false;
+        const demoQuestions = [
+            {
+                question: 'Where do the light-dependent reactions take place?',
+                options: [
+                    { id: 'A', text: 'In the stroma' },
+                    { id: 'B', text: 'In the thylakoid membranes' },
+                    { id: 'C', text: 'In the cytoplasm' },
+                    { id: 'D', text: 'In the mitochondrial matrix' },
+                ],
+                correctAnswer: 'B',
+                selectedAnswer: 'B',
+                explanation: 'The light-dependent reactions take place in the thylakoid membranes of chloroplasts.',
+                source: { text: 'Sample notes: Light-dependent reactions happen in the thylakoid membranes of chloroplasts.' },
+            },
+            {
+                question: 'Which gas is released during the light-dependent reactions?',
+                options: [
+                    { id: 'A', text: 'Carbon dioxide' },
+                    { id: 'B', text: 'Nitrogen' },
+                    { id: 'C', text: 'Oxygen' },
+                    { id: 'D', text: 'Methane' },
+                ],
+                correctAnswer: 'C',
+                selectedAnswer: 'A',
+                explanation: 'Splitting water during the light-dependent reactions releases oxygen.',
+                source: { text: 'Sample notes: Water is split during the light-dependent reactions, releasing oxygen.' },
+            },
+            {
+                question: 'Which energy carriers are made in the light-dependent reactions?',
+                options: [
+                    { id: 'A', text: 'ATP and NADPH' },
+                    { id: 'B', text: 'Glucose and oxygen' },
+                    { id: 'C', text: 'Carbon dioxide and water' },
+                    { id: 'D', text: 'ADP and NADP+' },
+                ],
+                correctAnswer: 'A',
+                selectedAnswer: 'A',
+                explanation: 'The light-dependent reactions store captured energy in ATP and NADPH.',
+                source: { text: 'Sample notes: Light energy is stored in the molecules ATP and NADPH.' },
+            },
+            {
+                question: 'Where does the Calvin cycle take place?',
+                options: [
+                    { id: 'A', text: 'In the thylakoid space' },
+                    { id: 'B', text: 'In the inner mitochondrial membrane' },
+                    { id: 'C', text: 'In the cytoplasm' },
+                    { id: 'D', text: 'In the chloroplast stroma' },
+                ],
+                correctAnswer: 'D',
+                selectedAnswer: 'B',
+                explanation: 'The Calvin cycle takes place in the stroma, the fluid-filled space inside a chloroplast.',
+                source: { text: 'Sample notes: The Calvin cycle takes place in the stroma of the chloroplast.' },
+            },
+            {
+                question: 'Which molecule provides the carbon that enters the Calvin cycle?',
+                options: [
+                    { id: 'A', text: 'Oxygen' },
+                    { id: 'B', text: 'Carbon dioxide' },
+                    { id: 'C', text: 'Water' },
+                    { id: 'D', text: 'Glucose' },
+                ],
+                correctAnswer: 'B',
+                selectedAnswer: 'B',
+                explanation: 'The Calvin cycle uses carbon dioxide from the air to build sugar molecules.',
+                source: { text: 'Sample notes: Carbon dioxide enters the Calvin cycle and supplies the carbon used to build sugars.' },
+            },
+        ];
+
+        // Reads the streamed reply: a JSON metadata line, a blank line, then model text.
+        async function post(url, data, onText) {
+            let r;
+            try {
+                r = await fetch(url, { method: 'POST', body: JSON.stringify(data) });
+            } catch {
+                throw new Error('Cannot reach StudyDeck. Start it with `npm start` and try again.');
+            }
+            if (!r.ok) throw new Error((await r.json()).error || 'Request failed');
+            const reader = r.body.getReader(), dec = new TextDecoder();
+            let buf = '', meta = null;
+            for (; ;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buf += dec.decode(value, { stream: true });
+                if (!meta) {
+                    const end = buf.indexOf('\n\n');
+                    if (end < 0) continue;
+                    meta = JSON.parse(buf.slice(0, end)); buf = buf.slice(end + 2);
+                }
+                if (onText) onText(buf, meta);
+            }
+            return { text: buf, meta };
+        }
+        const marks = (list) => list.map((source) => {
+            const m = document.createElement('mark');
+            m.textContent = typeof source === 'string'
+                ? source
+                : `${source.page ? `PDF page ${source.page}: ` : ''}${source.text}`;
+            return m;
+        });
+        function renderQuizQuestions(questions) {
+            $('quizQuestions').replaceChildren();
+            for (const [index, question] of questions.entries()) {
+                const card = document.createElement('article');
+                card.className = 'question-card';
+                const title = document.createElement('h3');
+                title.textContent = `Question ${index + 1}`;
+                const prompt = document.createElement('p');
+                prompt.textContent = question.question;
+                const fieldset = document.createElement('fieldset');
+                fieldset.setAttribute('aria-label', `Answer choices for question ${index + 1}`);
+                for (const option of question.options) {
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `quizChoice${index}`;
+                    input.value = option.id;
+                    input.required = true;
+                    input.checked = question.selectedAnswer === option.id;
+                    const text = document.createElement('span');
+                    text.textContent = `${option.id}. ${option.text}`;
+                    label.append(input, text);
+                    fieldset.append(label);
+                }
+                card.append(title, prompt, fieldset);
+                $('quizQuestions').append(card);
+            }
+        }
+        async function guard(btn, fn) {
+            btn.disabled = true;
+            try { await fn(); } catch (e) { status(e.message); } finally { btn.disabled = false; }
+        }
+
+        $('load').onclick = () => $('file').click();
+        $('file').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+                await guard($('load'), async () => {
+                    status('Extracting PDF text and indexing passages locally…');
+                    let r;
+                    try {
+                        r = await fetch('/api/pdf', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/pdf' },
+                            body: file,
+                        });
+                    } catch {
+                        throw new Error('Cannot reach StudyDeck. Start it with `npm start` and try the PDF again.');
+                    }
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'Could not read this PDF.');
+                    pdfIndexed = true;
+                    indexedNotes = null;
+                    status(`Indexed ${d.chunks} passages from ${d.pagesWithText} of ${d.pages} pages${d.skippedPages ? ` (${d.skippedPages} pages had no selectable text)` : ''}.`);
+                });
+            } else {
+                $('notes').value = await file.text();
+                pdfIndexed = false;
+                status(`Loaded ${file.name}. Your notes will be prepared automatically when you ask or build a quiz.`);
+            }
+            e.target.value = '';
+        };
+        async function indexNotes() {
+            status('Preparing your notes on this device. The first run may download the embedding model…');
+            const r = await fetch('/api/notes', { method: 'POST', body: JSON.stringify({ text: $('notes').value }) });
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.error || 'Could not index these notes.');
+            indexedNotes = $('notes').value;
+            pdfIndexed = false;
+            status(`Indexed ${d.chunks} passages.`);
+        }
+        $('notes').oninput = () => { pdfIndexed = false; };
+        $('index').onclick = () => guard($('index'), indexNotes);
+        async function ensureIndexedMaterial() {
+            if (pdfIndexed) return;
+            if (!$('notes').value.trim()) throw new Error('Add notes or upload a study file first.');
+            if (indexedNotes !== $('notes').value || !indexedNotes?.trim()) await indexNotes();
+        }
+
+        $('askForm').onsubmit = (event) => {
+            event.preventDefault();
+            $('askOut').textContent = '';
+            return guard($('askBtn'), async () => {
+                try {
+                    if (!$('q').value.trim()) { $('q').focus(); throw new Error('Enter a question first.'); }
+                    await ensureIndexedMaterial();
+                    $('askOut').textContent = 'Searching your notes on this device…';
+                    $('askSrc').replaceChildren();
+                    status('Searching your indexed passages locally…');
+                    await post('/api/ask', { question: $('q').value }, (t, m) => {
+                        if (t) $('askOut').textContent = t;
+                        status(t ? 'Generating an answer on this device…' : 'Loading the local chat model. First use may take a while; download progress appears in the server terminal…');
+                        $('askSrc').replaceChildren('Passages used:', ...marks(m.sources));
+                    });
+                    status('Answer ready. Generated on this device.');
+                } catch (error) {
+                    $('askOut').textContent = error.message;
+                    throw error;
+                }
+            });
+        };
+
+        $('demo').onclick = () => {
+            quizRound = {
+                questions: demoQuestions.map((question) => ({ ...question, options: question.options.map((option) => ({ ...option })) })),
+                complete: false,
+                demo: true,
+            };
+            $('t-quiz').click();
+            $('modeBadge').textContent = 'Presentation demo';
+            $('demoNotice').hidden = false;
+            $('newQ').textContent = 'Build a quiz from my notes';
+            $('grade').textContent = 'Submit demo answers';
+            $('quizResults').replaceChildren();
+            $('quizResults').hidden = true;
+            $('grade').hidden = false;
+            $('quizProgress').textContent = 'A five-question sample quiz is ready. Change any preselected answer, then submit.';
+            renderQuizQuestions(quizRound.questions);
+            status('Instant demo ready. No model download or generation wait.');
+        };
+
+        $('newQ').onclick = async () => {
+            $('newQ').disabled = true;
+            $('grade').hidden = true;
+            $('quizQuestions').replaceChildren();
+            $('quizResults').replaceChildren();
+            $('quizResults').hidden = true;
+            $('quizProgress').textContent = 'Preparing all five questions…';
+            status('Building your quiz on this device. You do not need to request questions one at a time.');
+            $('demoNotice').hidden = true;
+            $('modeBadge').textContent = 'On-device AI';
+            $('grade').textContent = 'Submit answers';
+
+            try {
+                await ensureIndexedMaterial();
+                let response;
+                try {
+                    response = await fetch('/api/quiz-round', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({}),
+                    });
+                } catch {
+                    throw new Error('Could not reach StudyDeck. Check that the app is running and try again.');
+                }
+                if (!response.ok) throw new Error((await response.json()).error || 'Could not build the quiz. Try again or load more notes.');
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                const questions = [];
+                for (; ;) {
+                    const { done, value } = await reader.read();
+                    buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+                        const event = JSON.parse(line);
+                        if (event.type === 'question') {
+                            questions.push({ ...event.question, source: event.source, selectedAnswer: '' });
+                            $('quizProgress').textContent = `Preparing your quiz… ${questions.length} of ${QUIZ_LENGTH}`;
+                        } else if (event.type === 'error') {
+                            throw new Error('Could not finish building the quiz. Try again or load more notes.');
+                        } else if (event.type === 'progress') {
+                            $('quizProgress').textContent = `Preparing your quiz… ${event.completed} of ${event.total}`;
+                        }
+                    }
+                    if (done) break;
+                }
+                if (questions.length !== QUIZ_LENGTH) throw new Error('Could not finish building the quiz. Try again or load more notes.');
+
+                quizRound = {
+                    questions,
+                    complete: false,
+                    demo: false,
+                };
+                renderQuizQuestions(questions);
+                $('grade').hidden = false;
+                $('quizProgress').textContent = 'All five questions are ready.';
+                status('All five questions are ready. Answer them in any order, then submit once.');
+            } catch {
+                $('quizProgress').textContent = 'We could not prepare this quiz. Try again, or load more notes.';
+                status('Quiz could not be prepared. Your notes are still here; you can try again.');
+            } finally {
+                $('newQ').disabled = false;
+            }
+        };
+        $('grade').onclick = () => guard($('grade'), async () => {
+            if (quizRound.questions.length !== QUIZ_LENGTH) throw new Error('Generate the five questions before submitting.');
+            const selectedAnswers = quizRound.questions.map((_, index) => $('quizQuestions').querySelector(`input[name="quizChoice${index}"]:checked`));
+            const unanswered = selectedAnswers.findIndex((selected) => !selected);
+            if (unanswered !== -1) {
+                $('quizProgress').textContent = `Choose an answer for question ${unanswered + 1} before submitting.`;
+                $('quizQuestions').querySelector(`input[name="quizChoice${unanswered}"]`)?.focus();
+                return;
+            }
+            quizRound.questions.forEach((question, index) => { question.selectedAnswer = selectedAnswers[index].value; });
+            const score = quizRound.questions.filter((question) => question.selectedAnswer === question.correctAnswer).length;
+            const heading = document.createElement('h3');
+            heading.textContent = `Quiz score: ${score}/${QUIZ_LENGTH}`;
+            const review = document.createElement('ol');
+            for (const question of quizRound.questions) {
+                const item = document.createElement('li');
+                const prompt = document.createElement('p');
+                prompt.textContent = question.question;
+                const selected = question.options.find((option) => option.id === question.selectedAnswer);
+                const yourAnswer = document.createElement('p');
+                yourAnswer.textContent = `Your answer: ${question.selectedAnswer}. ${selected.text}${question.selectedAnswer === question.correctAnswer ? ' — correct' : ' — incorrect'}`;
+                const correct = question.options.find((option) => option.id === question.correctAnswer);
+                const correctAnswer = document.createElement('p');
+                correctAnswer.textContent = `Correct answer: ${question.correctAnswer}. ${correct.text}`;
+                const explanation = document.createElement('p');
+                explanation.textContent = `Explanation: ${question.explanation}`;
+                const sourceLabel = document.createElement('p');
+                sourceLabel.textContent = 'Source:';
+                item.append(prompt, yourAnswer, correctAnswer, explanation, sourceLabel, ...marks([question.source]));
+                review.append(item);
+            }
+            $('quizResults').replaceChildren(heading, review);
+            $('quizResults').hidden = false;
+            $('grade').hidden = true;
+            $('newQ').textContent = 'Generate another 5-question quiz';
+            $('quizProgress').textContent = `Quiz complete · Score: ${score}/${QUIZ_LENGTH}.`;
+            quizRound.complete = true;
+            $('newQ').textContent = quizRound.demo ? 'Build a quiz from my notes' : 'Generate another 5-question quiz';
+        });
+
+        for (const [tab, panel, other, otherPanel] of [['t-ask', 'ask', 't-quiz', 'quiz'], ['t-quiz', 'quiz', 't-ask', 'ask']]) {
+            $(tab).onclick = () => {
+                $(tab).setAttribute('aria-selected', true); $(other).setAttribute('aria-selected', false);
+                $(panel).hidden = false; $(otherPanel).hidden = true;
+            };
+        }
+    </script>
+</body>
+
+</html>
